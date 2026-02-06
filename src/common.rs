@@ -35,9 +35,9 @@ pub const PLAYER_SPEED: f32 = 200.0;
 pub const JUMP_IMPULSE: f32 = 400.0;
 pub const INITIAL_LIVES: u32 = 3;
 
-// ── Events ───────────────────────────────────────────────────
-#[derive(Event)]
+// ── Messages ────────────────────────────────────────────────
+#[derive(Message)]
 pub struct PlayerDiedEvent;
 
-#[derive(Event)]
+#[derive(Message)]
 pub struct ScoreChangedEvent(pub u32);

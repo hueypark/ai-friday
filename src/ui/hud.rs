@@ -54,8 +54,8 @@ pub fn spawn_hud(mut commands: Commands) {
 pub fn update_hud(
     mut score_query: Query<&mut Text, (With<ScoreText>, Without<LivesText>)>,
     mut lives_query: Query<&mut Text, (With<LivesText>, Without<ScoreText>)>,
-    mut player_died_events: EventReader<PlayerDiedEvent>,
-    mut score_changed_events: EventReader<ScoreChangedEvent>,
+    mut player_died_events: MessageReader<PlayerDiedEvent>,
+    mut score_changed_events: MessageReader<ScoreChangedEvent>,
     mut game_data: ResMut<GameData>,
     mut next_state: ResMut<NextState<GameState>>,
 ) {
@@ -93,6 +93,6 @@ pub fn update_hud(
 
 pub fn despawn_hud(mut commands: Commands, query: Query<Entity, With<HudRoot>>) {
     for entity in &query {
-        commands.entity(entity).despawn_recursive();
+        commands.entity(entity).despawn();
     }
 }

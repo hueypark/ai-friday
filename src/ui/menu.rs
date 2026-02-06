@@ -72,6 +72,6 @@ pub fn menu_button_interaction(
 
 pub fn despawn_menu(mut commands: Commands, query: Query<Entity, With<MenuRoot>>) {
     for entity in &query {
-        commands.entity(entity).despawn_recursive();
+        commands.entity(entity).despawn();
     }
 }

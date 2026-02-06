@@ -122,6 +122,6 @@ pub fn game_over_button_interaction(
 
 pub fn despawn_game_over(mut commands: Commands, query: Query<Entity, With<GameOverRoot>>) {
     for entity in &query {
-        commands.entity(entity).despawn_recursive();
+        commands.entity(entity).despawn();
     }
 }

@@ -61,11 +61,11 @@ pub fn enemy_player_collision(
     mut commands: Commands,
     player_query: Query<(&Transform, &CollidingEntities), With<Player>>,
     enemy_query: Query<(Entity, &Transform), With<Enemy>>,
-    mut death_events: EventWriter<PlayerDiedEvent>,
-    mut score_events: EventWriter<ScoreChangedEvent>,
+    mut death_events: MessageWriter<PlayerDiedEvent>,
+    mut score_events: MessageWriter<ScoreChangedEvent>,
     game_data: Res<GameData>,
 ) {
-    let Ok((player_transform, colliding)) = player_query.get_single() else {
+    let Ok((player_transform, colliding)) = player_query.single() else {
         return;
     };
 
@@ -77,17 +77,17 @@ pub fn enemy_player_collision(
         let stomp_threshold = 16.0;
         if player_transform.translation.y > enemy_transform.translation.y + stomp_threshold {
             // Player stomped the enemy from above
-            commands.entity(enemy_entity).despawn_recursive();
-            score_events.send(ScoreChangedEvent(game_data.score + 100));
+            commands.entity(enemy_entity).despawn();
+            score_events.write(ScoreChangedEvent(game_data.score + 100));
         } else {
             // Enemy hit the player
-            death_events.send(PlayerDiedEvent);
+            death_events.write(PlayerDiedEvent);
         }
     }
 }
 
 pub fn despawn_enemies(mut commands: Commands, query: Query<Entity, With<Enemy>>) {
     for entity in &query {
-        commands.entity(entity).despawn_recursive();
+        commands.entity(entity).despawn();
     }
 }

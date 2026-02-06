@@ -70,17 +70,17 @@ pub fn check_coin_collection(
     mut commands: Commands,
     player_query: Query<&CollidingEntities, With<Player>>,
     collectible_query: Query<(Entity, &CoinValue), With<Collectible>>,
-    mut score_events: EventWriter<ScoreChangedEvent>,
+    mut score_events: MessageWriter<ScoreChangedEvent>,
     game_data: Res<GameData>,
 ) {
-    let Ok(colliding) = player_query.get_single() else {
+    let Ok(colliding) = player_query.single() else {
         return;
     };
 
     for &entity in colliding.iter() {
         if let Ok((collectible_entity, coin_value)) = collectible_query.get(entity) {
-            score_events.send(ScoreChangedEvent(game_data.score + coin_value.0));
-            commands.entity(collectible_entity).despawn_recursive();
+            score_events.write(ScoreChangedEvent(game_data.score + coin_value.0));
+            commands.entity(collectible_entity).despawn();
         }
     }
 }
@@ -91,6 +91,6 @@ pub fn despawn_level(
     collectibles: Query<Entity, With<Collectible>>,
 ) {
     for entity in platforms.iter().chain(collectibles.iter()) {
-        commands.entity(entity).despawn_recursive();
+        commands.entity(entity).despawn();
     }
 }

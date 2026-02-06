@@ -61,11 +61,11 @@ pub fn check_ground(
 
 pub fn check_player_death(
     mut query: Query<(&mut Transform, &mut LinearVelocity), With<Player>>,
-    mut death_events: EventWriter<PlayerDiedEvent>,
+    mut death_events: MessageWriter<PlayerDiedEvent>,
 ) {
     for (mut transform, mut velocity) in &mut query {
         if transform.translation.y < -500.0 {
-            death_events.send(PlayerDiedEvent);
+            death_events.write(PlayerDiedEvent);
             transform.translation = Vec3::new(0.0, 200.0, 0.0);
             velocity.0 = Vec2::ZERO;
         }
@@ -74,6 +74,6 @@ pub fn check_player_death(
 
 pub fn despawn_player(mut commands: Commands, query: Query<Entity, With<Player>>) {
     for entity in &query {
-        commands.entity(entity).despawn_recursive();
+        commands.entity(entity).despawn();
     }
 }
