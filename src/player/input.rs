@@ -11,4 +11,5 @@ pub fn read_input(keyboard: Res<ButtonInput<KeyCode>>, mut input: ResMut<PlayerI
     }
     input.move_direction = direction;
     input.jump_pressed = keyboard.just_pressed(KeyCode::Space);
+    input.jump_released = keyboard.just_released(KeyCode::Space);
 }

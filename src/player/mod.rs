@@ -15,8 +15,10 @@ impl Plugin for PlayerPlugin {
                 (
                     input::read_input,
                     systems::check_ground,
+                    systems::update_coyote_timer,
                     systems::player_movement,
                     systems::player_jump,
+                    systems::variable_jump_height,
                     systems::check_player_death,
                 )
                     .chain()

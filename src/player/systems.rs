@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use avian2d::prelude::*;
 use crate::common::*;
-use super::components::{Grounded, PlayerInput};
+use super::components::{CoyoteTimer, Grounded, JumpState, PlayerInput, COYOTE_TIME};
 
 pub fn spawn_player(mut commands: Commands) {
     commands.spawn((
@@ -17,6 +17,8 @@ pub fn spawn_player(mut commands: Commands) {
         LockedAxes::ROTATION_LOCKED,
         LinearVelocity::default(),
         Grounded(false),
+        CoyoteTimer::default(),
+        JumpState::default(),
         CollidingEntities::default(),
     ));
 }
@@ -32,14 +34,16 @@ pub fn player_movement(
 
 pub fn player_jump(
     input: Res<PlayerInput>,
-    mut query: Query<(&mut LinearVelocity, &Grounded), With<Player>>,
+    mut query: Query<(&mut LinearVelocity, &Grounded, &mut CoyoteTimer, &mut JumpState), With<Player>>,
 ) {
     if !input.jump_pressed {
         return;
     }
-    for (mut velocity, grounded) in &mut query {
-        if grounded.0 {
+    for (mut velocity, grounded, mut coyote, mut jump_state) in &mut query {
+        if grounded.0 || coyote.timer > 0.0 {
             velocity.y = JUMP_IMPULSE;
+            coyote.timer = 0.0;
+            jump_state.is_jumping = true;
         }
     }
 }
@@ -68,6 +72,33 @@ pub fn check_player_death(
             death_events.write(PlayerDiedEvent);
             transform.translation = Vec3::new(0.0, 200.0, 0.0);
             velocity.0 = Vec2::ZERO;
+        }
+    }
+}
+
+pub fn update_coyote_timer(
+    mut query: Query<(&mut CoyoteTimer, &Grounded), With<Player>>,
+    time: Res<Time>,
+) {
+    for (mut coyote, grounded) in &mut query {
+        if grounded.0 {
+            coyote.timer = COYOTE_TIME;
+        } else {
+            coyote.timer = (coyote.timer - time.delta_secs()).max(0.0);
+        }
+    }
+}
+
+pub fn variable_jump_height(
+    input: Res<PlayerInput>,
+    mut query: Query<(&mut LinearVelocity, &mut JumpState, &Grounded), With<Player>>,
+) {
+    for (mut velocity, mut jump_state, grounded) in &mut query {
+        if input.jump_released && jump_state.is_jumping && velocity.y > 0.0 {
+            velocity.y *= 0.5;
+        }
+        if grounded.0 {
+            jump_state.is_jumping = false;
         }
     }
 }
