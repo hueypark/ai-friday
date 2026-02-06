@@ -1,37 +1,53 @@
 use bevy::prelude::*;
 use avian2d::prelude::*;
 use crate::common::*;
-use super::components::{PatrolPath, PatrolDirection, EnemySpeed};
+use super::components::{PatrolPath, PatrolDirection, EnemySpeed, Stationary};
 
 pub fn spawn_enemies(mut commands: Commands) {
-    let enemies = [
-        // Enemy on the ground (y=-200 ground top, enemy center at -200 + 16 = -184)
-        (Vec2::new(-200.0, -184.0), Vec2::new(-50.0, -184.0)),
-        // Enemy on the ground, right side
-        (Vec2::new(100.0, -184.0), Vec2::new(250.0, -184.0)),
-        // Enemy on a mid-height platform (assuming platform around y=-50)
-        (Vec2::new(-100.0, -34.0), Vec2::new(50.0, -34.0)),
-        // Enemy on a higher platform (assuming platform around y=100)
-        (Vec2::new(150.0, 116.0), Vec2::new(300.0, 116.0)),
+    // (start, end, speed, color, width, height, is_stationary)
+    let enemies: &[(Vec2, Vec2, f32, Color, f32, f32, bool)] = &[
+        // 2 slow patrols on ground (speed 60, lighter red)
+        (Vec2::new(-500.0, -184.0), Vec2::new(-350.0, -184.0), 60.0, Color::srgb(1.0, 0.4, 0.4), 32.0, 32.0, false),
+        (Vec2::new(350.0, -184.0), Vec2::new(500.0, -184.0), 60.0, Color::srgb(1.0, 0.4, 0.4), 32.0, 32.0, false),
+
+        // 2 normal patrols on tier 1 (speed 80)
+        (Vec2::new(-250.0, -64.0), Vec2::new(-150.0, -64.0), 80.0, Color::srgb(0.9, 0.2, 0.2), 32.0, 32.0, false),
+        (Vec2::new(350.0, -44.0), Vec2::new(450.0, -44.0), 80.0, Color::srgb(0.9, 0.2, 0.2), 32.0, 32.0, false),
+
+        // 2 fast patrols on tier 2 (speed 120, darker red)
+        (Vec2::new(-300.0, 56.0), Vec2::new(-200.0, 56.0), 120.0, Color::srgb(0.7, 0.1, 0.1), 32.0, 32.0, false),
+        (Vec2::new(400.0, 116.0), Vec2::new(500.0, 116.0), 120.0, Color::srgb(0.7, 0.1, 0.1), 32.0, 32.0, false),
+
+        // 1 fast patrol on tier 3
+        (Vec2::new(100.0, 196.0), Vec2::new(200.0, 196.0), 120.0, Color::srgb(0.7, 0.1, 0.1), 32.0, 32.0, false),
+
+        // 3 stationary blockers (wider, darkest red, speed 0, start==end)
+        (Vec2::new(0.0, -24.0), Vec2::new(0.0, -24.0), 0.0, Color::srgb(0.5, 0.0, 0.0), 48.0, 32.0, true),
+        (Vec2::new(-100.0, 256.0), Vec2::new(-100.0, 256.0), 0.0, Color::srgb(0.5, 0.0, 0.0), 48.0, 32.0, true),
+        (Vec2::new(100.0, 376.0), Vec2::new(100.0, 376.0), 0.0, Color::srgb(0.5, 0.0, 0.0), 48.0, 32.0, true),
     ];
 
-    for (start, end) in enemies {
-        commands.spawn((
+    for &(start, end, speed, color, w, h, is_stationary) in enemies {
+        let mut entity_commands = commands.spawn((
             Enemy,
             Sprite {
-                color: Color::srgb(0.9, 0.2, 0.2),
-                custom_size: Some(Vec2::new(32.0, 32.0)),
+                color,
+                custom_size: Some(Vec2::new(w, h)),
                 ..default()
             },
             Transform::from_xyz(start.x, start.y, 0.0),
             RigidBody::Kinematic,
-            Collider::rectangle(32.0, 32.0),
+            Collider::rectangle(w, h),
             PatrolPath { start, end },
             PatrolDirection(1.0),
-            EnemySpeed(80.0),
+            EnemySpeed(speed),
             LinearVelocity::default(),
             CollidingEntities::default(),
         ));
+
+        if is_stationary {
+            entity_commands.insert(Stationary);
+        }
     }
 }
 
