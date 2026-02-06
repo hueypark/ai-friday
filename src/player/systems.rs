@@ -103,6 +103,17 @@ pub fn variable_jump_height(
     }
 }
 
+pub fn apply_fall_gravity(
+    mut query: Query<(&mut GravityScale, &LinearVelocity), With<Player>>,
+) {
+    const RISE_GRAVITY: f32 = 3.0;
+    const FALL_GRAVITY: f32 = 10.0;
+
+    for (mut gravity, velocity) in &mut query {
+        gravity.0 = if velocity.y > 0.0 { RISE_GRAVITY } else { FALL_GRAVITY };
+    }
+}
+
 pub fn despawn_player(mut commands: Commands, query: Query<Entity, With<Player>>) {
     for entity in &query {
         commands.entity(entity).despawn();
