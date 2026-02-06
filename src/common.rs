@@ -32,7 +32,7 @@ pub struct Collectible;
 // ── Constants ────────────────────────────────────────────────
 pub const TILE_SIZE: f32 = 32.0;
 pub const PLAYER_SPEED: f32 = 200.0;
-pub const JUMP_IMPULSE: f32 = 320.0;
+pub const JUMP_IMPULSE: f32 = 420.0;
 pub const INITIAL_LIVES: u32 = 3;
 
 // ── Messages ────────────────────────────────────────────────
