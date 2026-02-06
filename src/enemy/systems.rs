@@ -29,29 +29,29 @@ pub fn spawn_enemies(mut commands: Commands) {
             PatrolPath { start, end },
             PatrolDirection(1.0),
             EnemySpeed(80.0),
+            LinearVelocity::default(),
+            CollidingEntities::default(),
         ));
     }
 }
 
 pub fn enemy_patrol(
-    time: Res<Time>,
     mut query: Query<(
-        &mut Transform,
+        &Transform,
         &PatrolPath,
         &mut PatrolDirection,
         &EnemySpeed,
+        &mut LinearVelocity,
     ), With<Enemy>>,
 ) {
-    for (mut transform, path, mut direction, speed) in &mut query {
-        let dt = time.delta_secs();
-        transform.translation.x += direction.0 * speed.0 * dt;
+    for (transform, path, mut direction, speed, mut velocity) in &mut query {
+        velocity.x = direction.0 * speed.0;
+        velocity.y = 0.0;
 
         // Flip direction when reaching patrol endpoints
         if direction.0 > 0.0 && transform.translation.x >= path.end.x {
-            transform.translation.x = path.end.x;
             direction.0 = -1.0;
         } else if direction.0 < 0.0 && transform.translation.x <= path.start.x {
-            transform.translation.x = path.start.x;
             direction.0 = 1.0;
         }
     }
