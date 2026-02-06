@@ -3,10 +3,10 @@ use crate::common::Player;
 
 const CAMERA_LERP_FACTOR: f32 = 0.1;
 const CAMERA_MIN_X: f32 = -800.0;
-const CAMERA_MAX_X: f32 = 800.0;
+const CAMERA_MAX_X: f32 = 900.0;
 const CAMERA_LERP_FACTOR_Y: f32 = 0.08;
 const CAMERA_MIN_Y: f32 = -200.0;
-const CAMERA_MAX_Y: f32 = 400.0;
+const CAMERA_MAX_Y: f32 = 500.0;
 
 pub fn camera_follow_player(
     player_query: Query<&Transform, With<Player>>,
