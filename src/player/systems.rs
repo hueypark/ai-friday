@@ -46,7 +46,7 @@ pub fn player_jump(
 
 pub fn check_ground(
     mut query: Query<(&mut Grounded, &CollidingEntities, &Transform), With<Player>>,
-    transform_query: Query<&Transform, Without<Player>>,
+    transform_query: Query<&Transform, (With<Platform>, Without<Player>)>,
 ) {
     for (mut grounded, colliding, player_transform) in &mut query {
         grounded.0 = colliding.iter().any(|&entity| {
@@ -60,13 +60,14 @@ pub fn check_ground(
 }
 
 pub fn check_player_death(
-    mut query: Query<&mut Transform, With<Player>>,
+    mut query: Query<(&mut Transform, &mut LinearVelocity), With<Player>>,
     mut death_events: EventWriter<PlayerDiedEvent>,
 ) {
-    for mut transform in &mut query {
+    for (mut transform, mut velocity) in &mut query {
         if transform.translation.y < -500.0 {
             death_events.send(PlayerDiedEvent);
             transform.translation = Vec3::new(0.0, 200.0, 0.0);
+            velocity.0 = Vec2::ZERO;
         }
     }
 }
