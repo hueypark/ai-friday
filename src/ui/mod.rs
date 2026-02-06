@@ -26,7 +26,8 @@ impl Plugin for UiPlugin {
         app.add_systems(OnEnter(GameState::Playing), (init_game_data, hud::spawn_hud))
             .add_systems(
                 Update,
-                hud::update_hud.run_if(in_state(GameState::Playing)),
+                (hud::update_hud, hud::update_hud_flash)
+                    .run_if(in_state(GameState::Playing)),
             )
             .add_systems(OnExit(GameState::Playing), hud::despawn_hud);
 

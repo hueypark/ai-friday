@@ -98,24 +98,40 @@ pub fn spawn_game_over(mut commands: Commands, game_data: Res<GameData>) {
 }
 
 pub fn game_over_button_interaction(
-    restart_query: Query<&Interaction, (Changed<Interaction>, With<RestartButton>)>,
-    menu_query: Query<&Interaction, (Changed<Interaction>, With<MainMenuButton>)>,
+    mut restart_query: Query<(&Interaction, &mut BackgroundColor), (Changed<Interaction>, With<RestartButton>, Without<MainMenuButton>)>,
+    mut menu_query: Query<(&Interaction, &mut BackgroundColor), (Changed<Interaction>, With<MainMenuButton>, Without<RestartButton>)>,
     mut game_data: ResMut<GameData>,
     mut next_state: ResMut<NextState<GameState>>,
 ) {
-    for interaction in &restart_query {
-        if *interaction == Interaction::Pressed {
-            game_data.score = 0;
-            game_data.lives = INITIAL_LIVES;
-            next_state.set(GameState::Playing);
+    for (interaction, mut bg_color) in &mut restart_query {
+        match interaction {
+            Interaction::Pressed => {
+                game_data.score = 0;
+                game_data.lives = INITIAL_LIVES;
+                next_state.set(GameState::Playing);
+            }
+            Interaction::Hovered => {
+                *bg_color = BackgroundColor(Color::srgb(0.3, 0.85, 0.3));
+            }
+            Interaction::None => {
+                *bg_color = BackgroundColor(Color::srgb(0.2, 0.7, 0.2));
+            }
         }
     }
 
-    for interaction in &menu_query {
-        if *interaction == Interaction::Pressed {
-            game_data.score = 0;
-            game_data.lives = INITIAL_LIVES;
-            next_state.set(GameState::Menu);
+    for (interaction, mut bg_color) in &mut menu_query {
+        match interaction {
+            Interaction::Pressed => {
+                game_data.score = 0;
+                game_data.lives = INITIAL_LIVES;
+                next_state.set(GameState::Menu);
+            }
+            Interaction::Hovered => {
+                *bg_color = BackgroundColor(Color::srgb(0.55, 0.55, 0.55));
+            }
+            Interaction::None => {
+                *bg_color = BackgroundColor(Color::srgb(0.4, 0.4, 0.4));
+            }
         }
     }
 }

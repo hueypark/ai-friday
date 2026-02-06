@@ -32,6 +32,16 @@ pub fn spawn_menu(mut commands: Commands) {
                 TextColor(Color::WHITE),
             ));
 
+            // Subtitle
+            parent.spawn((
+                Text::new("A 2D Platformer Adventure"),
+                TextFont {
+                    font_size: 28.0,
+                    ..default()
+                },
+                TextColor(Color::srgb(0.7, 0.7, 0.7)),
+            ));
+
             // Play button
             parent
                 .spawn((
@@ -56,16 +66,34 @@ pub fn spawn_menu(mut commands: Commands) {
                         TextColor(Color::WHITE),
                     ));
                 });
+
+            // Controls hint
+            parent.spawn((
+                Text::new("Move: A/D/Arrows | Jump: Space | Stomp enemies!"),
+                TextFont {
+                    font_size: 18.0,
+                    ..default()
+                },
+                TextColor(Color::srgb(0.6, 0.6, 0.6)),
+            ));
         });
 }
 
 pub fn menu_button_interaction(
-    query: Query<&Interaction, (Changed<Interaction>, With<PlayButton>)>,
+    mut query: Query<(&Interaction, &mut BackgroundColor), (Changed<Interaction>, With<PlayButton>)>,
     mut next_state: ResMut<NextState<GameState>>,
 ) {
-    for interaction in &query {
-        if *interaction == Interaction::Pressed {
-            next_state.set(GameState::Playing);
+    for (interaction, mut bg_color) in &mut query {
+        match interaction {
+            Interaction::Pressed => {
+                next_state.set(GameState::Playing);
+            }
+            Interaction::Hovered => {
+                *bg_color = BackgroundColor(Color::srgb(0.3, 0.85, 0.3));
+            }
+            Interaction::None => {
+                *bg_color = BackgroundColor(Color::srgb(0.2, 0.7, 0.2));
+            }
         }
     }
 }
