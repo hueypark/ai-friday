@@ -60,6 +60,7 @@ pub fn update_hud(
     mut next_state: ResMut<NextState<GameState>>,
 ) {
     let mut changed = false;
+    let mut game_over = false;
 
     for ScoreChangedEvent(new_score) in score_changed_events.read() {
         game_data.score = *new_score;
@@ -72,8 +73,7 @@ pub fn update_hud(
             changed = true;
         }
         if game_data.lives == 0 {
-            next_state.set(GameState::GameOver);
-            return;
+            game_over = true;
         }
     }
 
@@ -84,6 +84,10 @@ pub fn update_hud(
         for mut text in &mut lives_query {
             **text = format!("Lives: {}", game_data.lives);
         }
+    }
+
+    if game_over {
+        next_state.set(GameState::GameOver);
     }
 }
 
