@@ -12,7 +12,8 @@ impl Plugin for LevelPlugin {
         app.add_systems(OnEnter(GameState::Playing), (map::spawn_level, map::spawn_collectibles))
             .add_systems(
                 Update,
-                camera::camera_follow_player.run_if(in_state(GameState::Playing)),
+                (camera::camera_follow_player, map::check_coin_collection)
+                    .run_if(in_state(GameState::Playing)),
             )
             .add_systems(OnExit(GameState::Playing), map::despawn_level);
     }

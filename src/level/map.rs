@@ -60,7 +60,28 @@ pub fn spawn_collectibles(mut commands: Commands) {
                 ..default()
             },
             Transform::from_xyz(x, y, 0.0),
+            Collider::rectangle(16.0, 16.0),
+            Sensor,
         ));
+    }
+}
+
+pub fn check_coin_collection(
+    mut commands: Commands,
+    player_query: Query<&CollidingEntities, With<Player>>,
+    collectible_query: Query<(Entity, &CoinValue), With<Collectible>>,
+    mut score_events: EventWriter<ScoreChangedEvent>,
+    game_data: Res<GameData>,
+) {
+    let Ok(colliding) = player_query.get_single() else {
+        return;
+    };
+
+    for &entity in colliding.iter() {
+        if let Ok((collectible_entity, coin_value)) = collectible_query.get(entity) {
+            score_events.send(ScoreChangedEvent(game_data.score + coin_value.0));
+            commands.entity(collectible_entity).despawn_recursive();
+        }
     }
 }
 
