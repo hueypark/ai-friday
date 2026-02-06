@@ -2,6 +2,8 @@
 
 Rust + Bevy 0.18 + avian2d 0.5 기반 2D 플랫포머 게임
 
+**플레이**: https://hueypark.github.io/ai-friday/
+
 ## 기술 스택
 
 - **Rust** (Edition 2024)
