@@ -19,6 +19,7 @@ fn main() {
             ..default()
         }))
         .add_plugins(avian2d::prelude::PhysicsPlugins::default())
+        .insert_resource(avian2d::prelude::Gravity(Vec2::new(0.0, -980.0)))
         .init_state::<GameState>()
         .init_resource::<GameData>()
         .init_resource::<PlayerInput>()

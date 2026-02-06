@@ -20,6 +20,7 @@ pub fn spawn_player(mut commands: Commands) {
         CoyoteTimer::default(),
         JumpState::default(),
         CollidingEntities::default(),
+        GravityScale(1.5),
     ));
 }
 
@@ -106,8 +107,8 @@ pub fn variable_jump_height(
 pub fn apply_fall_gravity(
     mut query: Query<(&mut GravityScale, &LinearVelocity), With<Player>>,
 ) {
-    const RISE_GRAVITY: f32 = 3.0;
-    const FALL_GRAVITY: f32 = 10.0;
+    const RISE_GRAVITY: f32 = 0.5;
+    const FALL_GRAVITY: f32 = 1.5;
 
     for (mut gravity, velocity) in &mut query {
         gravity.0 = if velocity.y > 0.0 { RISE_GRAVITY } else { FALL_GRAVITY };
